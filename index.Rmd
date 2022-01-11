@@ -1,0 +1,153 @@
+---
+title: "Midpoint Deliverable Group 3"
+author: "Russell Eng, Anne Lin, Xinmeng Zhang, Neil Sun"
+date: "08/13/2021"
+output:
+  prettydoc::html_pretty: default
+  html_document: default
+---
+
+```{r setup, include = F, message = F}
+chooseCRANmirror(graphics=FALSE, ind=1)
+knitr::opts_chunk$set(echo = TRUE)
+library("sf")
+library("knitr")
+library("kableExtra")
+df <- read.csv("data/us_state_vaccinations.csv")
+states <- read_sf("data/us_map/tl_2020_us_state.shp")
+sex_df <- read.csv("data/sex_of_people_fully_vaccinated.csv", header = TRUE, 
+  strip.white = TRUE, sep = ",")
+population <- read.csv("data/population.csv")
+blue_red_states <-
+  read.csv("data/democratic_vs_republican_votes_by_usa_state_2020.csv")
+source("scripts/summary info table.R")
+source("scripts/chart 1.R")
+source("scripts/chart 2.R")
+source("scripts/chart 3.R")
+source("scripts/summary info.R")
+options(scipen = 999)
+
+```
+
+## Introduction of Problem Domain and Dataset
+***
+This project is about the **vaccinations of COVID-19 vaccines** in the US. 
+Given that the Delta variant is causing a new surge of COVID-19 cases, it is key 
+that all people get their vaccination as soon as possible. We are eager to know 
+_how people of different states react to vaccination_. By breaking down the 
+vaccinated population by state, it would be easier to create targeting 
+incentives, promoting vaccination to fight against the more transmissible Delta 
+variant. Our data set is downloaded from the [CDC website](https://covid.cdc.gov/covid-data-tracker/#vaccination-trends) and 
+contains information including the amount of vaccines distributed to and 
+administered in each state over the course of 228 days, 
+from 12/20/2020 to 08/04/2021. 
+
+
+## Summary Information
+***
+For the summary, we included the following information:
+
+- **The column names, including:**
+
+>`r summary_info(df, blue_red_states)$col_names`
+
+- **the total number of vaccinations nationwide as of:**
+
+>`r summary_info(df, blue_red_states)$total_vacc_0804`
+
+- **the state with the highest percentage of fully vaccinated population as of 08/04/2021:**
+
+>`r summary_info(df, blue_red_states)$max_fully_rate_state`
+
+- **the state with the highest number of vaccination distribution as of 08/04/2021:**
+
+>`r summary_info(df, blue_red_states)$most_distributed_state`
+
+- **the number of people fully vaccinated in Washington state as of 08/04/2021:**
+
+>`r summary_info(df, blue_red_states)$wa_fully_vacc_0804`
+
+## Aggregate Table
+***
+Below is a table that summarizes the number of average daily vaccinations and 
+what day in the week has the most vaccinations in each state.
+
+```{r summary_table, echo = F, message = F}
+kbl(get_summary_table(df, population),
+    col.names = c("Location", "Political Stance", "Most Vaccination Weekday",
+                "Daily Average Vaccination",
+                "Percentage of Daily Vaccinated Population",
+                "Fully-Vaccinated Population",
+                "Total Vaccinations")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+We sorted the table in descending order based on the
+_Percentage of Daily Vaccinated Population_, and Vermont tuned out to be the
+state with the most percentage of population vaccinated every day. This result
+resonates well with one of the conclusion we drew from the summary: Vermont has
+the highest fully-vaccinated population ratio among all states.
+
+We were also interested in knowing on what day in the week people are the most
+willing to go get vaccinated in the week and concluded from that **Saturday**
+has the most vaccinations; this is likely because many people work on weekdays and
+are not able to go get their vaccination on such days. Another thing we found
+interesting from the table is that the states with higher rates of fully
+vaccinated population are **democratic states**. 
+
+
+## Leaflet Map
+***
+Below is a map that shows the percentage of the population that is
+fully vaccinated in each state.
+
+```{r chart 1, echo=FALSE, message = FALSE, warning = FALSE} 
+map_chart(df, states)
+```
+
+We used _Leaflet_, the most common open source for interactive map charts, to
+generate the map and facilitate further web-page programming using shiny().
+While there are other districts, departments, and entities listed in the data,
+we only selected the 51 states/districts in the US as we hoped to see the
+distribution of the fully vaccinated population in each states. Based on the
+map, we are able to conclude that **states on the west coast and the upper east
+coast are the most vaccinated states**, while many of the southern states are
+the least vaccinated states. This result can be tied back to the aggregated
+table and illustrate the fact that democratic states tend to have the highest
+rate of vaccinated population.
+
+## Area Graph
+***
+Below is a area graph that shows the trend of vaccinations in weeks starting
+from week 1 in 2021 to week 31 in 2021 (01/04/2012 - 08/04/2021).
+*Note that week 31 only has data for three days.
+
+```{r chart 2, echo = F, message = FALSE} 
+line_chart(df)
+```
+
+We used an area chart for our data set with a great scale of quantitative data,
+as it is one of the best way for communicating a trend over the course of a
+specified period. 
+
+The area graph shows that the weekly vaccination in the US in 2021 started at
+around 4 million at the beginning and **increased until it peaked in week 15**,
+which is mid-April. However, the number of weekly vaccinations started to
+**decrease afterwards**. The reason why this sudden and sharp decline is yet to
+be discussed and will be included in the final submission.
+
+## Bar Chart 
+***
+Below is a bar chart that shows the percentage of males and females
+in the US population, the vaccinated population, and the people vaccinated in
+the last 14 days.
+
+```{r chart 3, echo = F, message=FALSE} 
+bar_chart(sex_df)
+```
+
+Bar chart is a useful layout to compare the differences between genders in our
+data set. According the the three bars shown above, while the percentage of
+females and males in the US are nearly equal, more females are vaccinated than
+males in the fully-vaccinated population. At this point in time, we can conclude
+that **females are generally more open to vaccination than males in the US**.

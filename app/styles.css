@@ -1,0 +1,37 @@
+/* Reference: shiny example of leaflet: https://github.com/rstudio/shiny-examples.git */
+
+/* Customize fonts */
+h2, h3 {
+  font-family:Tahoma, Geneva, sans-serif;
+  font-weight: bold;
+  font-size: 30px;
+}
+
+/* Customize fonts */
+p {
+  font-family:Tahoma, Geneva, sans-serif;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.warning {
+  color: red;
+}
+
+html{
+  overflow-y: auto !important;
+}
+
+img {
+  display: block;
+  border:3px solid white;
+}
+
+li {
+  font-family:Tahoma, Geneva, sans-serif;
+  font-weight: bold;
+}
+
+body {
+  background: white;
+}
